@@ -1,0 +1,35 @@
+.red-line {
+  border: medium none;
+  border-top: 2px outset #ff0000;
+  width: 100%;
+  height: 1px;
+  margin: 2px;
+}
+
+.page-line {
+  border: medium none;
+  border-top: 1px outset #197af3;
+  width: 100%;
+  height: 1px;
+}
+
+body {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
+    url("https://img.freepik.com/free-vector/outline-graduation-cap-with-book-pencil-with-paintbrush-background_24640-45259.jpg?t=st=1720760289~exp=1720763889~hmac=d8f6e63d19b222725bde0a5e3cf433e27ca70e16ae799f6d881cf0651af4085c&w=826");
+  background-size: contain;
+  background-repeat: repeat;
+  /* background-position: center; */
+}
+
+.col:hover .card {
+  background-color: #990956; /* Change background color on hover */
+  transition: 0.2s ease-in-out;
+}
+
+.col:hover .card-title {
+  color: white; /* Change text color on hover */
+}
+
+.col:hover .fa-icon {
+  color: #963e3e !important; /* Change icon color on hover */
+}
