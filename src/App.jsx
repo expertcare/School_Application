@@ -26,6 +26,7 @@ import ServiceRequestOutbox from "./components/ServiceRequestOutbox";
 import OrderUniform from "./components/OrderUniform";
 import { useLayoutEffect } from "react";
 import ChangePassword from "./components/ChangePassword";
+import IDCardPhoto from "./components/IDCardPhoto";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -67,6 +68,7 @@ function App() {
         />
         <Route path="/orderUniform" element={<OrderUniform />} />
         <Route path="/ChangePassword" element={<ChangePassword />} />
+        <Route path="/IDCardPhoto" element={<IDCardPhoto />} />
       </Routes>
     </Router>
   );

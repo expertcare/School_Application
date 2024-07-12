@@ -54,7 +54,12 @@ const Dashboard = () => {
             color="#f44336"
             route="/SubjectSelection"
           />
-          <ServiceCard title="ID Card Photo" icon={faImage} color="#e91e63" />
+          <ServiceCard
+            title="ID Card Photo"
+            icon={faImage}
+            color="#e91e63"
+            route="/IDCardPhoto"
+          />
           <ServiceCard
             title="Notices"
             icon={faBell}
