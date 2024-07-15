@@ -50,7 +50,8 @@ const OrderUniform = () => {
         <Col>
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId="fullName">
-              <Form.Label>Full Name</Form.Label>
+              <Form.Label>Full Name</Form.Label>{" "}
+              <span className="text-danger">*</span>
               <Form.Control
                 type="text"
                 name="fullName"
@@ -62,7 +63,8 @@ const OrderUniform = () => {
             </Form.Group>
 
             <Form.Group controlId="email">
-              <Form.Label>Email address</Form.Label>
+              <Form.Label>Email address</Form.Label>{" "}
+              <span className="text-danger">*</span>
               <Form.Control
                 type="email"
                 name="email"
@@ -74,7 +76,8 @@ const OrderUniform = () => {
             </Form.Group>
 
             <Form.Group controlId="phone">
-              <Form.Label>Phone Number</Form.Label>
+              <Form.Label>Phone Number</Form.Label>{" "}
+              <span className="text-danger">*</span>
               <Form.Control
                 type="tel"
                 name="phone"
@@ -86,7 +89,8 @@ const OrderUniform = () => {
             </Form.Group>
 
             <Form.Group controlId="uniformType">
-              <Form.Label>Uniform Type</Form.Label>
+              <Form.Label>Uniform Type</Form.Label>{" "}
+              <span className="text-danger">*</span>
               <Form.Control
                 as="select"
                 name="uniformType"
@@ -103,7 +107,8 @@ const OrderUniform = () => {
             </Form.Group>
 
             <Form.Group controlId="size">
-              <Form.Label>Size</Form.Label>
+              <Form.Label>Size</Form.Label>{" "}
+              <span className="text-danger">*</span>
               <Form.Control
                 type="text"
                 name="size"
@@ -115,7 +120,8 @@ const OrderUniform = () => {
             </Form.Group>
 
             <Form.Group controlId="quantity">
-              <Form.Label>Quantity</Form.Label>
+              <Form.Label>Quantity</Form.Label>{" "}
+              <span className="text-danger">*</span>
               <Form.Control
                 type="number"
                 name="quantity"

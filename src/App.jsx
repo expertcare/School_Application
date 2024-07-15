@@ -27,6 +27,16 @@ import OrderUniform from "./components/OrderUniform";
 import { useLayoutEffect } from "react";
 import ChangePassword from "./components/ChangePassword";
 import IDCardPhoto from "./components/IDCardPhoto";
+import AdminDashboard from "./components/Admin_Pannel/AdminDashboard";
+import AddDailyUpdate from "./components/Admin_Pannel/AddDailyUpdate";
+import AddTimeTable from "./components/Admin_Pannel/AddTimeTable";
+import AddNotice from "./components/Admin_Pannel/AddNotice";
+import ViewPaymentRecords from "./components/Admin_Pannel/ViewPaymentRecords";
+import AddDocuments from "./components/Admin_Pannel/AddDocuments";
+import AddDisciplineSlips from "./components/Admin_Pannel/AddDisciplineSlips";
+import UniformOrders from "./components/Admin_Pannel/UniformOrders";
+import StudentForm from "./components/Admin_Pannel/StudentForm";
+import ManageServiceRequest from "./components/Admin_Pannel/ManageServiceRequest";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -69,6 +79,27 @@ function App() {
         <Route path="/orderUniform" element={<OrderUniform />} />
         <Route path="/ChangePassword" element={<ChangePassword />} />
         <Route path="/IDCardPhoto" element={<IDCardPhoto />} />
+
+        {/* Admin  */}
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/daily_updates" element={<AddDailyUpdate />} />
+        <Route path="/admin/create_timetable" element={<AddTimeTable />} />
+        <Route path="/admin/add_notices" element={<AddNotice />} />
+        <Route
+          path="/admin/view_payment_records"
+          element={<ViewPaymentRecords />}
+        />
+        <Route path="/admin/add_documents" element={<AddDocuments />} />
+        <Route
+          path="/admin/add_discipline_slips"
+          element={<AddDisciplineSlips />}
+        ></Route>
+        <Route path="/admin/uniform_orders" element={<UniformOrders />} />
+        <Route path="/admin/student_form" element={<StudentForm />} />
+        <Route
+          path="/admin/manage_service_request"
+          element={<ManageServiceRequest />}
+        />
       </Routes>
     </Router>
   );
