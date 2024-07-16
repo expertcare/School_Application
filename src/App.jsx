@@ -1,12 +1,15 @@
-import SigninPage from "./components/SigninPage";
+import React from "react";
 import "bootstrap/dist/css/bootstrap.css";
 import "./App.css";
+import "react-toastify/dist/ReactToastify.css";
 import {
   BrowserRouter as Router,
   Route,
   Routes,
   useLocation,
 } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import SigninPage from "./components/SigninPage";
 import Dashboard from "./components/Dashboard";
 import AttendanceSummary from "./components/AttendanceSummary";
 import FeesComponent from "./components/FeesComponent";
@@ -24,7 +27,6 @@ import PayBusFees from "./components/PayBusFees";
 import ActivityFeesComponent from "./components/ActivityFeesComponent";
 import ServiceRequestOutbox from "./components/ServiceRequestOutbox";
 import OrderUniform from "./components/OrderUniform";
-import { useLayoutEffect } from "react";
 import ChangePassword from "./components/ChangePassword";
 import IDCardPhoto from "./components/IDCardPhoto";
 import AdminDashboard from "./components/Admin_Pannel/AdminDashboard";
@@ -35,13 +37,17 @@ import ViewPaymentRecords from "./components/Admin_Pannel/ViewPaymentRecords";
 import AddDocuments from "./components/Admin_Pannel/AddDocuments";
 import AddDisciplineSlips from "./components/Admin_Pannel/AddDisciplineSlips";
 import UniformOrders from "./components/Admin_Pannel/UniformOrders";
-import StudentForm from "./components/Admin_Pannel/StudentForm";
 import ManageServiceRequest from "./components/Admin_Pannel/ManageServiceRequest";
+import ProtectedRoute from "./components/ProtectedRoute";
+import StudentCreation from "./components/Admin_Pannel/StudentCreation";
+import StudentSearch from "./components/Admin_Pannel/StudentSearch";
+import StudentForm from "./components/Admin_Pannel/StudentForm";
+import { ToastContainer } from "react-toastify";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
 
-  useLayoutEffect(() => {
+  React.useLayoutEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
@@ -50,58 +56,69 @@ function ScrollToTop() {
 
 function App() {
   return (
-    <Router>
-      <ScrollToTop /> {/* This ensures scrolling to the top on route change */}
-      <Routes>
-        <Route path="/" element={<SigninPage />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/attendanceSummary" element={<AttendanceSummary />} />
-        <Route path="/fees" element={<FeesComponent />} />
-        <Route path="/dailyUpdates" element={<DailyUpdates />} />
-        <Route path="/markSheet" element={<MarkSheet />} />
-        <Route path="/parentsManual" element={<ParentsManual />} />
-        <Route path="/formsDownload" element={<FormsDownload />} />
-        <Route path="/syllabus" element={<Syllabus />} />
-        <Route path="/notice" element={<Notice />} />
-        <Route path="/timetable" element={<Timetable />} />
-        <Route path="/subjectSelection" element={<SubjectSelection />} />
-        <Route path="/myPaymentFees" element={<MyPaymentFees />} />
-        <Route path="/viewProfile" element={<ViewProfile />} />
-        <Route path="/payBusFees" element={<PayBusFees />} />
-        <Route
-          path="/activityFeesComponent"
-          element={<ActivityFeesComponent />}
-        />
-        <Route
-          path="/serviceRequestOutbox"
-          element={<ServiceRequestOutbox />}
-        />
-        <Route path="/orderUniform" element={<OrderUniform />} />
-        <Route path="/ChangePassword" element={<ChangePassword />} />
-        <Route path="/IDCardPhoto" element={<IDCardPhoto />} />
+    <AuthProvider>
+      <Router>
+        <ScrollToTop />{" "}
+        {/* This ensures scrolling to the top on route change */}
+        <Routes>
+          <Route path="/" element={<SigninPage />} />
+          <Route path="/login" element={<SigninPage />} />
+          <Route element={<ProtectedRoute />}>
+            {/* <Route> */}
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/attendanceSummary" element={<AttendanceSummary />} />
+            <Route path="/fees" element={<FeesComponent />} />
+            <Route path="/dailyUpdates" element={<DailyUpdates />} />
+            <Route path="/markSheet" element={<MarkSheet />} />
+            <Route path="/parentsManual" element={<ParentsManual />} />
+            <Route path="/formsDownload" element={<FormsDownload />} />
+            <Route path="/syllabus" element={<Syllabus />} />
+            <Route path="/notice" element={<Notice />} />
+            <Route path="/timetable" element={<Timetable />} />
+            <Route path="/subjectSelection" element={<SubjectSelection />} />
+            <Route path="/myPaymentFees" element={<MyPaymentFees />} />
+            <Route path="/viewProfile" element={<ViewProfile />} />
+            <Route path="/payBusFees" element={<PayBusFees />} />
+            <Route
+              path="/activityFeesComponent"
+              element={<ActivityFeesComponent />}
+            />
+            <Route
+              path="/serviceRequestOutbox"
+              element={<ServiceRequestOutbox />}
+            />
+            <Route path="/orderUniform" element={<OrderUniform />} />
+            <Route path="/changePassword" element={<ChangePassword />} />
+            <Route path="/idCardPhoto" element={<IDCardPhoto />} />
 
-        {/* Admin  */}
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/daily_updates" element={<AddDailyUpdate />} />
-        <Route path="/admin/create_timetable" element={<AddTimeTable />} />
-        <Route path="/admin/add_notices" element={<AddNotice />} />
-        <Route
-          path="/admin/view_payment_records"
-          element={<ViewPaymentRecords />}
-        />
-        <Route path="/admin/add_documents" element={<AddDocuments />} />
-        <Route
-          path="/admin/add_discipline_slips"
-          element={<AddDisciplineSlips />}
-        ></Route>
-        <Route path="/admin/uniform_orders" element={<UniformOrders />} />
-        <Route path="/admin/student_form" element={<StudentForm />} />
-        <Route
-          path="/admin/manage_service_request"
-          element={<ManageServiceRequest />}
-        />
-      </Routes>
-    </Router>
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/daily_updates" element={<AddDailyUpdate />} />
+            <Route path="/admin/create_timetable" element={<AddTimeTable />} />
+            <Route path="/admin/add_notices" element={<AddNotice />} />
+            <Route
+              path="/admin/view_payment_records"
+              element={<ViewPaymentRecords />}
+            />
+            <Route path="/admin/add_documents" element={<AddDocuments />} />
+            <Route
+              path="/admin/add_discipline_slips"
+              element={<AddDisciplineSlips />}
+            />
+            <Route path="/admin/uniform_orders" element={<UniformOrders />} />
+            <Route path="/admin/student_form" element={<StudentCreation />} />
+            <Route path="/admin/create_student" element={<StudentForm />} />
+            <Route path="/admin/view_students" element={<StudentSearch />} />
+
+            <Route
+              path="/admin/manage_service_request"
+              element={<ManageServiceRequest />}
+            />
+          </Route>
+        </Routes>
+      </Router>
+      <ToastContainer />
+    </AuthProvider>
   );
 }
 

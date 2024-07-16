@@ -1,16 +1,15 @@
 import React from "react";
 import { Container, Row, Col, Image } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const StudentProfile = () => {
-  // Dummy data for student profile
-  const student = {
-    name: "John Doe",
-    board: "CBSE",
-    grade: "Grade IV",
-    division: "A",
-    enrollmentNo: "2021001",
-  };
+  const { student } = useAuth(); // Fetch student data from context
+
+  // Show loading or default data if student data is not available
+  if (!student) {
+    return <p>Loading...</p>; // Or handle this with a more user-friendly message/component
+  }
 
   return (
     <Container className="mt-4 px-4">
@@ -31,7 +30,7 @@ const StudentProfile = () => {
             <strong>Grade:</strong> {student.grade}
           </p>
           <p>
-            <strong>Division:</strong> {student.division}
+            <strong>Division:</strong> {student.div}
           </p>
           <p>
             <strong>Enrollment No.:</strong> {student.enrollmentNo}

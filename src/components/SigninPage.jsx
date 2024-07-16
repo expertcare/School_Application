@@ -1,20 +1,53 @@
 import React from "react";
-
-import logo from "../assets/logo.webp";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useAuth } from "../context/AuthContext"; // Import useAuth hook
+import logo from "../assets/logo.webp";
+import { toast } from "react-toastify";
 
 const SigninPage = () => {
   const navigate = useNavigate();
+  const { login, setStudentData } = useAuth(); // Access login function and setStudentData from context
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const username = e.target.username.value;
     const password = e.target.password.value;
 
-    console.log(username);
-    console.log(password);
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/auth/login",
+        {
+          EnrollmentNo: username,
+          password,
+        }
+      );
 
-    navigate("/dashboard");
+      const { token } = response.data;
+      login(token); // Call login function from context
+
+      // Fetch student data
+      const studentResponse = await axios.get(
+        `http://localhost:3000/api/students/${username}`, // Adjust endpoint if necessary
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const studentData = studentResponse.data;
+
+      // Store student data in context and localStorage
+      setStudentData(studentData);
+      localStorage.setItem("studentData", JSON.stringify(studentData));
+
+      console.log(`User ${username} logged in successfully!`);
+      navigate("/dashboard");
+    } catch (error) {
+      toast.error(
+        `Login failed: ${
+          error.response ? error.response.data.message : error.message
+        }`
+      );
+    }
   };
 
   return (
@@ -22,7 +55,7 @@ const SigninPage = () => {
       className="bg-light p-3 p-md-4 p-xl-5 min-vh-100 d-flex align-items-center"
       style={{
         backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("https://img.freepik.com/free-vector/back-school-wallpaper_23-2148605376.jpg?t=st=1720675373~exp=1720678973~hmac=1f902d5e683ab1aae2a017238465edd7c2798a9c879f216ed19c92041786a524&w=1380")`,
-        backgroundSize: "contain",
+        backgroundSize: "cover",
         backgroundPosition: "center",
       }}
     >
@@ -50,7 +83,6 @@ const SigninPage = () => {
                                 <img
                                   src={logo}
                                   alt="Walstar Logo"
-                                  //   width="175"
                                   height="50"
                                 />
                               </a>
@@ -69,7 +101,7 @@ const SigninPage = () => {
                               <input
                                 type="text"
                                 className="form-control rounded-3"
-                                name="Username"
+                                name="username"
                                 id="username"
                                 placeholder="Username"
                                 required

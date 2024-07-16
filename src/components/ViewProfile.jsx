@@ -1,18 +1,9 @@
 import React, { useState } from "react";
 import { Container, Form, Button } from "react-bootstrap";
+import { useAuth } from "../context/AuthContext";
 
 const ViewProfile = () => {
-  const [studentProfile] = useState({
-    name: "John Doe",
-    board: "CBSE",
-    grade: "Grade IV",
-    division: "A",
-    appNo: "O7073",
-    enrNo: "NO6882",
-    dob: "12/12/2010",
-    bloodGroup: "O+",
-    gender: "Female",
-  });
+  const { student } = useAuth(); // Fetch student data from context
 
   const [studentPhoto, setStudentPhoto] = useState(null);
   const [fatherPhoto, setFatherPhoto] = useState(null);
@@ -39,6 +30,11 @@ const ViewProfile = () => {
     setGuardianPhoto(null);
   };
 
+  // Handle case when student data is not available
+  if (!student) {
+    return <p>Loading...</p>; // Or handle this with a more user-friendly message/component
+  }
+
   return (
     <Container className="my-5 card p-4 col-lg-6">
       <h2 className="my-4">Student Profile</h2>
@@ -49,39 +45,39 @@ const ViewProfile = () => {
         <h4>Personal Information</h4>
         <hr className="page-line" />
         <p>
-          <strong>Name:</strong> {studentProfile.name}
+          <strong>Name:</strong> {student.name}
         </p>
         <hr className="page-line" />
         <p>
-          <strong>Board:</strong> {studentProfile.board}
+          <strong>Board:</strong> {student.board}
         </p>
         <hr className="page-line" />
         <p>
-          <strong>Grade:</strong> {studentProfile.grade}
+          <strong>Grade:</strong> {student.grade}
         </p>
         <hr className="page-line" />
         <p>
-          <strong>Div:</strong> {studentProfile.division}
+          <strong>Div:</strong> {student.div}
         </p>
         <hr className="page-line" />
         <p>
-          <strong>APP No.:</strong> {studentProfile.appNo}
+          <strong>APP No.:</strong> {student.applicationNo}
         </p>
         <hr className="page-line" />
         <p>
-          <strong>Enr No.:</strong> {studentProfile.enrNo}
+          <strong>Enr No.:</strong> {student.enrollmentNo}
         </p>
         <hr className="page-line" />
         <p>
-          <strong>Date of birth:</strong> {studentProfile.dob}
+          <strong>Date of birth:</strong> {student.dateOfBirth}
         </p>
         <hr className="page-line" />
         <p>
-          <strong>Blood group:</strong> {studentProfile.bloodGroup}
+          <strong>Blood group:</strong> {student.bloodGroup}
         </p>
         <hr className="page-line" />
         <p>
-          <strong>Gender:</strong> {studentProfile.gender}
+          <strong>Gender:</strong> {student.gender}
         </p>
       </div>
 
