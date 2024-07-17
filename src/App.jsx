@@ -43,6 +43,7 @@ import StudentCreation from "./components/Admin_Pannel/StudentCreation";
 import StudentSearch from "./components/Admin_Pannel/StudentSearch";
 import StudentForm from "./components/Admin_Pannel/StudentForm";
 import { ToastContainer } from "react-toastify";
+import DisciplineSlips from "./components/DisciplineSlips";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -90,6 +91,7 @@ function App() {
             <Route path="/orderUniform" element={<OrderUniform />} />
             <Route path="/changePassword" element={<ChangePassword />} />
             <Route path="/idCardPhoto" element={<IDCardPhoto />} />
+            <Route path="/disciplineSlips" element={<DisciplineSlips />} />
 
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminDashboard />} />

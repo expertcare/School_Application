@@ -17,11 +17,11 @@ const ServiceCard = ({ title, icon, color, route }) => {
         onClick={handleClick}
         style={{ cursor: "pointer" }}
       >
-        <Card.Body className="text-center">
+        <Card.Body className="text-center ">
           <FontAwesomeIcon
             icon={icon}
             size="2x"
-            className="mb-4"
+            className="mb-4 fa-icon"
             style={{ color: color, transition: "color 0.3s ease" }}
           />
           <Card.Title>{title}</Card.Title>

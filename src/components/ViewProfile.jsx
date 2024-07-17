@@ -1,9 +1,15 @@
 import React, { useState } from "react";
 import { Container, Form, Button } from "react-bootstrap";
 import { useAuth } from "../context/AuthContext";
+import { format } from "date-fns";
 
 const ViewProfile = () => {
   const { student } = useAuth(); // Fetch student data from context
+
+  const formattedDateOfBirth = format(
+    new Date(student.dateOfBirth),
+    "MMMM d, yyyy"
+  );
 
   const [studentPhoto, setStudentPhoto] = useState(null);
   const [fatherPhoto, setFatherPhoto] = useState(null);
@@ -69,7 +75,7 @@ const ViewProfile = () => {
         </p>
         <hr className="page-line" />
         <p>
-          <strong>Date of birth:</strong> {student.dateOfBirth}
+          <strong>Date of birth:</strong> {formattedDateOfBirth}
         </p>
         <hr className="page-line" />
         <p>

@@ -9,6 +9,7 @@ import {
   Spinner,
   Modal,
 } from "react-bootstrap";
+import { toast } from "react-toastify";
 
 const StudentSearch = () => {
   const [board, setBoard] = useState("");
@@ -16,7 +17,6 @@ const StudentSearch = () => {
   const [div, setDiv] = useState("");
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [editStudent, setEditStudent] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
@@ -24,15 +24,16 @@ const StudentSearch = () => {
   const handleSearch = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
 
     try {
       const response = await axios.get(
         `http://localhost:3000/api/students/${board}/${grade}/${div}`
       );
-      setStudents(response.data);
+
+      setStudents(response.data.students);
+      toast.success(response.data.message);
     } catch (err) {
-      setError("Error fetching student data");
+      toast.error(err.response.data.message);
     } finally {
       setLoading(false);
     }
@@ -58,8 +59,9 @@ const StudentSearch = () => {
       );
       setShowModal(false);
       setEditStudent(null);
+      toast.success("Student data updated successfully!");
     } catch (err) {
-      setError("Error updating student data");
+      toast.error("Error updating student data");
     }
   };
 
@@ -112,7 +114,6 @@ const StudentSearch = () => {
       </Form>
 
       {loading && <Spinner animation="border" />}
-      {error && <Alert variant="danger">{error}</Alert>}
 
       {students.length > 0 && (
         <Table striped bordered hover responsive>

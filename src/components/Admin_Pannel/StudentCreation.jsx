@@ -18,7 +18,7 @@ const StudentCreation = () => {
 
   return (
     <Container className="card my-5 p-4 min-vh-100">
-      <h3 className="my-3">Admin Dashboard</h3>
+      <h3 className="my-3">Create And View Students</h3>
       <hr className="red-line" />
       <hr className="red-line mb-4" />
 

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const StudentForm = () => {
   const [studentData, setStudentData] = useState({
@@ -13,8 +14,6 @@ const StudentForm = () => {
     bloodGroup: "",
     gender: "",
   });
-
-  const [message, setMessage] = useState(null); // For displaying messages
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,8 +34,7 @@ const StudentForm = () => {
       );
 
       // Handle success response
-
-      setMessage({ type: "success", text: response.data.message });
+      toast.success(response.data.message);
 
       // Reset form
       setStudentData({
@@ -54,13 +52,13 @@ const StudentForm = () => {
       // Handle error response
       if (error.response) {
         // Server responded with a status other than 2xx
-        setMessage({ type: "error", text: error.response.data.error });
+        toast.error(error.response.data.error);
       } else if (error.request) {
         // The request was made but no response was received
-        setMessage({ type: "error", text: "No response from server" });
+        toast.error("No response from server");
       } else {
         // Something else happened
-        setMessage({ type: "error", text: "An unexpected error occurred" });
+        toast.error("An unexpected error occurred");
       }
     }
   };
@@ -224,15 +222,6 @@ const StudentForm = () => {
             Submit
           </button>
         </form>
-        {message && (
-          <div
-            className={`alert ${
-              message.type === "success" ? "alert-success" : "alert-danger"
-            } mt-3`}
-          >
-            {message.text}
-          </div>
-        )}
       </div>
     </>
   );

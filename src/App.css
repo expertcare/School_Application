@@ -30,6 +30,10 @@ body {
   color: white; /* Change text color on hover */
 }
 
+.col:hover .card-text {
+  color: white; /* Change text color on hover */
+}
+
 .col:hover .fa-icon {
-  color: #963e3e !important; /* Change icon color on hover */
+  color: #ffffff !important; /* Change icon color on hover */
 }

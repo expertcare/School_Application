@@ -107,7 +107,7 @@ const SigninPage = () => {
                                 required
                               />
                               <label htmlFor="username" className="form-label">
-                                Username
+                                Enrollment Number
                               </label>
                             </div>
                           </div>

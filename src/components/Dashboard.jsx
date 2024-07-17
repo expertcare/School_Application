@@ -123,6 +123,7 @@ const Dashboard = () => {
             title="My Discipline Slips"
             icon={faWrench}
             color="#ffc107"
+            route="/disciplineSlips"
           />
           <ServiceCard
             title="Parents Manual"
