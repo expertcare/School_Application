@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { Form, Button } from "react-bootstrap";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const AddNotice = () => {
   const [circularNo, setCircularNo] = useState("");
   const [date, setDate] = useState("");
   const [subject, setSubject] = useState("");
   const [content, setContent] = useState("");
-  const [attachments, setAttachments] = useState([]);
+  const [recipientType, setRecipientType] = useState("all");
 
   const handleCircularNoChange = (e) => {
     setCircularNo(e.target.value);
@@ -24,31 +26,42 @@ const AddNotice = () => {
     setContent(e.target.value);
   };
 
-  const handleAttachmentChange = (e) => {
-    const files = Array.from(e.target.files);
-    setAttachments(files);
+  const handleRecipientTypeChange = (e) => {
+    setRecipientType(e.target.value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Prepare data to be sent to the backend or handle locally
     const notice = {
       circularNo,
       date,
       subject,
       content,
-      attachments,
+      recipientType,
     };
 
-    console.log("Submitted Notice:", notice);
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/notices",
+        notice
+      );
 
-    // Clear form fields after submission
-    setCircularNo("");
-    setDate("");
-    setSubject("");
-    setContent("");
-    setAttachments([]);
+      if (response.data.success) {
+        toast.success(response.data.message);
+      } else {
+        toast.error(response.data.message);
+      }
+
+      // Clear form fields after submission
+      setCircularNo("");
+      setDate("");
+      setSubject("");
+      setContent("");
+      setRecipientType("all");
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
   };
 
   return (
@@ -105,13 +118,19 @@ const AddNotice = () => {
           />
         </Form.Group>
 
-        <Form.Group controlId="attachments">
-          <Form.Label>Attachments</Form.Label>
+        <Form.Group controlId="recipientType">
+          <Form.Label>Recipient Type</Form.Label>{" "}
+          <span className="text-danger">*</span>
           <Form.Control
-            type="file"
-            multiple
-            onChange={handleAttachmentChange}
-          />
+            as="select"
+            value={recipientType}
+            onChange={handleRecipientTypeChange}
+            required
+          >
+            <option value="student">Student</option>
+            <option value="faculty">Faculty</option>
+            <option value="all">All</option>
+          </Form.Control>
         </Form.Group>
 
         <Button className="mt-3" variant="primary" type="submit">

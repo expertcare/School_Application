@@ -1,17 +1,25 @@
 import React, { useState } from "react";
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
+import axios from "axios"; // Import axios
+import sizechart from "../assets/UniformBlazerChartSize.jpg";
+import { toast } from "react-toastify";
 
 const OrderUniform = () => {
+  // Initialize form data state with default values
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     phone: "",
-    uniformType: "",
+    gender: "",
     size: "",
     quantity: 1,
     additionalNotes: "",
   });
 
+  // Initialize state for handling submission status
+  const [submissionStatus, setSubmissionStatus] = useState(null);
+
+  // Handle form input changes and update state
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -20,20 +28,47 @@ const OrderUniform = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  // Handle form submission
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here you can handle form submission logic
-    console.log("Form submitted with data:", formData);
-    // Reset form fields after submission
-    setFormData({
-      fullName: "",
-      email: "",
-      phone: "",
-      uniformType: "",
-      size: "",
-      quantity: 1,
-      additionalNotes: "",
-    });
+
+    // Validate the form (you could add more validations here)
+    if (
+      !formData.fullName ||
+      !formData.email ||
+      !formData.phone ||
+      !formData.gender ||
+      !formData.size
+    ) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
+    try {
+      // Make POST request to backend API
+      const response = await axios.post(
+        "http://localhost:3000/api/uniform/orders",
+        formData
+      );
+      console.log("Form submitted with data:", response.data);
+
+      // Update submission status
+      toast.success("Order submitted successfully!");
+
+      // Reset form fields after submission
+      setFormData({
+        fullName: "",
+        email: "",
+        phone: "",
+        gender: "",
+        size: "",
+        quantity: 1,
+        additionalNotes: "",
+      });
+    } catch (error) {
+      console.error("Error submitting order:", error);
+      setSubmissionStatus("Failed to submit order. Please try again.");
+    }
   };
 
   return (
@@ -50,8 +85,9 @@ const OrderUniform = () => {
         <Col>
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId="fullName">
-              <Form.Label>Full Name</Form.Label>{" "}
-              <span className="text-danger">*</span>
+              <Form.Label>
+                Full Name <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 type="text"
                 name="fullName"
@@ -63,8 +99,9 @@ const OrderUniform = () => {
             </Form.Group>
 
             <Form.Group controlId="email">
-              <Form.Label>Email address</Form.Label>{" "}
-              <span className="text-danger">*</span>
+              <Form.Label>
+                Email address <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 type="email"
                 name="email"
@@ -76,8 +113,9 @@ const OrderUniform = () => {
             </Form.Group>
 
             <Form.Group controlId="phone">
-              <Form.Label>Phone Number</Form.Label>{" "}
-              <span className="text-danger">*</span>
+              <Form.Label>
+                Phone Number <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 type="tel"
                 name="phone"
@@ -88,40 +126,55 @@ const OrderUniform = () => {
               />
             </Form.Group>
 
-            <Form.Group controlId="uniformType">
-              <Form.Label>Uniform Type</Form.Label>{" "}
-              <span className="text-danger">*</span>
+            <Form.Group controlId="gender">
+              <Form.Label>
+                Gender <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 as="select"
-                name="uniformType"
-                value={formData.uniformType}
+                name="gender"
+                value={formData.gender}
                 onChange={handleInputChange}
                 required
               >
-                <option value="">Select uniform type</option>
-                <option value="Shirt">Shirt</option>
-                <option value="Pants">Pants</option>
-                <option value="Skirt">Skirt</option>
-                {/* Add more options as needed */}
+                <option value="">Select gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
               </Form.Control>
             </Form.Group>
 
             <Form.Group controlId="size">
-              <Form.Label>Size</Form.Label>{" "}
-              <span className="text-danger">*</span>
+              <Form.Label>
+                Size <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
-                type="text"
+                as="select"
                 name="size"
-                placeholder="Enter size (e.g., Small, Medium)"
                 value={formData.size}
                 onChange={handleInputChange}
                 required
-              />
+              >
+                <option value="">Select size</option>
+                <option value="XX-Small">XX-Small</option>
+                <option value="X-Small">X-Small</option>
+                <option value="Small">Small</option>
+                <option value="Medium">Medium</option>
+                <option value="Large">Large</option>
+                <option value="X-Large">X-Large</option>
+                <option value="XX-Large">XX-Large</option>
+              </Form.Control>
             </Form.Group>
 
+            <div className="my-2">
+              <a href={sizechart} target="_blank" rel="noopener noreferrer">
+                View Size Chart
+              </a>
+            </div>
+
             <Form.Group controlId="quantity">
-              <Form.Label>Quantity</Form.Label>{" "}
-              <span className="text-danger">*</span>
+              <Form.Label>
+                Quantity <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 type="number"
                 name="quantity"

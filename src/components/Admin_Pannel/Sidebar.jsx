@@ -130,7 +130,7 @@ const Sidebar = ({ logout }) => {
 
           {/* Add Notices */}
           <li className="nav-item" data-bs-dismiss="offcanvas">
-            <Link className="nav-link" to="/admin/add_notices">
+            <Link className="nav-link" to="/admin/manage_notices">
               <div className="d-flex align-items-center gap-4">
                 <div className="nav-link-icon text-secondary">
                   <i

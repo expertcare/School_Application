@@ -44,6 +44,9 @@ import StudentSearch from "./components/Admin_Pannel/StudentSearch";
 import StudentForm from "./components/Admin_Pannel/StudentForm";
 import { ToastContainer } from "react-toastify";
 import DisciplineSlips from "./components/DisciplineSlips";
+import ManageNotices from "./components/Admin_Pannel/ManageNotices";
+import ViewEditNotice from "./components/Admin_Pannel/ViewEditNotice";
+import UserForm from "./components/Admin_Pannel/UserForm";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -92,12 +95,16 @@ function App() {
             <Route path="/changePassword" element={<ChangePassword />} />
             <Route path="/idCardPhoto" element={<IDCardPhoto />} />
             <Route path="/disciplineSlips" element={<DisciplineSlips />} />
-
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/daily_updates" element={<AddDailyUpdate />} />
             <Route path="/admin/create_timetable" element={<AddTimeTable />} />
             <Route path="/admin/add_notices" element={<AddNotice />} />
+            <Route
+              path="/admin/view_edit_notices"
+              element={<ViewEditNotice />}
+            />
+            <Route path="/admin/manage_notices" element={<ManageNotices />} />
             <Route
               path="/admin/view_payment_records"
               element={<ViewPaymentRecords />}
@@ -110,8 +117,8 @@ function App() {
             <Route path="/admin/uniform_orders" element={<UniformOrders />} />
             <Route path="/admin/student_form" element={<StudentCreation />} />
             <Route path="/admin/create_student" element={<StudentForm />} />
+            <Route path="/admin/create_user" element={<UserForm />} />
             <Route path="/admin/view_students" element={<StudentSearch />} />
-
             <Route
               path="/admin/manage_service_request"
               element={<ManageServiceRequest />}

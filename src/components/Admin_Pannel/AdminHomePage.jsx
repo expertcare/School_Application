@@ -12,6 +12,7 @@ import {
   faShirt,
   faUserGraduate,
   faTasksAlt,
+  faHomeUser,
 } from "@fortawesome/free-solid-svg-icons";
 
 const AdminCard = ({ icon, iconColor, title, description, linkTo }) => (
@@ -63,7 +64,7 @@ const AdminHomePage = () => {
           iconColor="warning"
           title="Manage Notices"
           description="Add, edit, or delete notices for communication with parents and staff."
-          linkTo="/admin/add_notices"
+          linkTo="/admin/manage_notices"
         />
         <AdminCard
           icon={faFile}
@@ -92,6 +93,13 @@ const AdminHomePage = () => {
           title="Create Student"
           description="View and create student."
           linkTo="/admin/student_form"
+        />
+        <AdminCard
+          icon={faHomeUser}
+          iconColor="primary"
+          title="Create Faculty or Admin"
+          description="View and create faculties and admins"
+          linkTo="/admin/create_user"
         />
         <AdminCard
           icon={faTasksAlt}

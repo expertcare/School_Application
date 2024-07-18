@@ -1,41 +1,36 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Table } from "react-bootstrap";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const UniformOrders = () => {
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Simulated data for demonstration
   useEffect(() => {
-    // Replace with actual fetch logic
-    const simulatedOrders = [
-      {
-        id: 1,
-        fullName: "John Doe",
-        email: "john.doe@example.com",
-        phone: "123-456-7890",
-        uniformType: "Shirt",
-        size: "Medium",
-        quantity: 2,
-        additionalNotes: "No special instructions.",
-      },
-      {
-        id: 2,
-        fullName: "Jane Smith",
-        email: "jane.smith@example.com",
-        phone: "987-654-3210",
-        uniformType: "Skirt",
-        size: "Small",
-        quantity: 1,
-        additionalNotes: "Deliver before next week.",
-      },
-      // Add more simulated data as needed
-    ];
+    // Fetch orders from backend
+    const fetchOrders = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/api/uniform/orders"
+        );
+        setOrders(response.data);
+        setLoading(false);
+        toast.success("Orders loaded successfully!");
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+        setLoading(false);
+        toast.error("Failed to fetch orders. Please try again.");
+      }
+    };
 
-    setOrders(simulatedOrders);
-  }, []);
+    fetchOrders();
+  }, []); // Empty dependency array ensures this only runs once
+
+  if (loading) return <p>Loading orders...</p>;
 
   return (
-    <Container className="card my-5 p-4">
+    <Container className="card my-5 p-4 min-vh-100">
       <h3 className="mb-3">Uniform Orders</h3>
       <hr className="red-line" />
       <hr className="red-line mb-4" />
@@ -48,7 +43,7 @@ const UniformOrders = () => {
                 <th>Full Name</th>
                 <th>Email</th>
                 <th>Phone Number</th>
-                <th>Uniform Type</th>
+                <th>Gender</th>
                 <th>Size</th>
                 <th>Quantity</th>
                 <th>Additional Notes</th>
@@ -56,12 +51,12 @@ const UniformOrders = () => {
             </thead>
             <tbody>
               {orders.map((order, index) => (
-                <tr key={order.id}>
+                <tr key={order._id}>
                   <td>{index + 1}</td>
                   <td>{order.fullName}</td>
                   <td>{order.email}</td>
                   <td>{order.phone}</td>
-                  <td>{order.uniformType}</td>
+                  <td>{order.gender}</td>
                   <td>{order.size}</td>
                   <td>{order.quantity}</td>
                   <td>{order.additionalNotes}</td>
