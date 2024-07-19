@@ -1,60 +1,77 @@
-import React from "react";
-import { Container, Row, Col, Card, Button } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { Container, Table } from "react-bootstrap";
+import axios from "axios";
+import { useAuth } from "../context/AuthContext";
+import { toast } from "react-toastify";
 
 const Timetable = () => {
-  const timetables = [
-    {
-      date: "2024-23-06",
-      title: "TimeTable Grade 4A",
-      description:
-        "Kindly find the attached Time Table of Grade 4A for academic year 2024-25. Thank You. Regards. VIBGYOR High.",
-      attachments: [
-        { name: "Screenshot_20240623-151350_1.jpg", link: "#" }, // Replace with actual link
-      ],
-    },
-    // Add more timetable entries as needed
-  ];
+  const { student } = useAuth();
+
+  const [timetables, setTimetables] = useState(null); // Start with null instead of []
+
+  useEffect(() => {
+    fetchTimetables();
+  }, []);
+
+  const fetchTimetables = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/api/timetable/${student.grade}/${student.div}`
+      );
+
+      setTimetables(response.data);
+      toast.success(response.data.message);
+    } catch (error) {
+      console.error("Error fetching timetables:", error);
+      // Handle error states or display an error message to the user
+      toast.error(error.response.data.error);
+    }
+  };
 
   return (
-    <Container className="mt-5 mb-5 p-4 card min-vh-100 col-lg-8">
-      <h3 className="my-3">Timetable</h3>
+    <Container className="card my-5 p-4 min-vh-100">
+      <h3 className="mb-3">View Timetable</h3>
       <hr className="red-line" />
-      <hr className="red-line mb-4" />
+      <hr className="red-line mb-3" />
 
-      {timetables.map((timetable, index) => (
-        <Card key={index} className="shadow mb-4">
-          <Card.Body>
-            <Row>
-              <Col md={2}>
-                <div className="text-center">
-                  <h4>{index + 1}</h4>
-                  <p>{timetable.date}</p>
-                </div>
-              </Col>
-              <Col md={10}>
-                <h5>{timetable.title}</h5>
-                <p>{timetable.description}</p>
-                <div>
-                  <strong>Attachment(s):</strong>
-                  <ul>
-                    {timetable.attachments.map((attachment, idx) => (
-                      <li key={idx}>
-                        <a
-                          href={attachment.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {attachment.name}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </Col>
-            </Row>
-          </Card.Body>
-        </Card>
-      ))}
+      {timetables === null ? (
+        <div className="text-center my-3">
+          <hr className="page-line" />
+          <h4>Time Table not found</h4>
+          <hr className="page-line" />
+          <hr className="page-line mt-5" />
+        </div>
+      ) : (
+        <>
+          <h4 className="text-center m-5">
+            CLASS TIME TABLE : {timetables.grade} - Div {timetables.division}
+          </h4>
+          <Table striped bordered hover responsive>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Monday</th>
+                <th>Tuesday</th>
+                <th>Wednesday</th>
+                <th>Thursday</th>
+                <th>Friday</th>
+              </tr>
+            </thead>
+            <tbody>
+              {timetables.timetable.map((slot, idx) => (
+                <tr key={`${idx}`}>
+                  <td>{slot.time}</td>
+                  <td>{slot.monday}</td>
+                  <td>{slot.tuesday}</td>
+                  <td>{slot.wednesday}</td>
+                  <td>{slot.thursday}</td>
+                  <td>{slot.friday}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </>
+      )}
     </Container>
   );
 };

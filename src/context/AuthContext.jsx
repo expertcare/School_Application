@@ -10,7 +10,11 @@ import { jwtDecode } from "jwt-decode";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [student, setStudent] = useState(null); // Add state for student data
+  const [student, setStudent] = useState(() => {
+    // Initialize student state from localStorage if available
+    const storedStudent = localStorage.getItem("studentData");
+    return storedStudent ? JSON.parse(storedStudent) : null;
+  });
 
   // Function to check if the token is valid
   const checkTokenValidity = useCallback((token) => {
@@ -43,7 +47,8 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem("authToken");
-    setStudent(null); // Clear student data on logout
+    localStorage.removeItem("studentData"); // Remove student data on logout
+    setStudent(null); // Clear student data in state
   };
 
   const isAuthenticated = useCallback(() => {
@@ -51,9 +56,10 @@ export const AuthProvider = ({ children }) => {
   }, [getToken]);
 
   // Function to set student data
-  const setStudentData = (studentData) => {
+  const setStudentData = useCallback((studentData) => {
+    localStorage.setItem("studentData", JSON.stringify(studentData));
     setStudent(studentData);
-  };
+  }, []);
 
   // Load student data from localStorage if available
   useEffect(() => {
