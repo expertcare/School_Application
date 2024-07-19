@@ -1,70 +1,88 @@
-import React from "react";
-import { Container, Row, Col, Card } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { Container, Table } from "react-bootstrap";
+import axios from "axios";
+import { useAuth } from "../context/AuthContext"; // Assuming you have an AuthContext for authentication
 
-const DailyUpdates = () => {
-  const updates = [
-    {
-      date: "2024-11-07",
-      title: "Daily Diary Grade 4A",
-      description:
-        "Dear Parents, Kindly find the attached Daily Diary of 11th July 2024 of Grade 4A. Regards. VIBGYOR High.",
-      message: "",
-      attachments: [
-        { name: "Daily diary 4A", date: "(11th July 2024)", link: "#" },
-      ],
-    },
-    {
-      date: "2024-10-07",
-      title: "DAILY DIARY GRADE 4A",
-      description:
-        "Dear Parents, Kindly find the attached Daily Diary of 10th July 2024 Of Grade 4A. Regards. VIBGYOR High.",
-      message: "",
-      attachments: [
-        { name: "Daily diary 4A", date: "(10th July 2024)", link: "#" },
-      ],
-    },
-  ];
+const DailyDiaryViewer = () => {
+  const { student } = useAuth(); // Assuming this provides grade and division
+  const [diaryEntries, setDiaryEntries] = useState([]);
+
+  useEffect(() => {
+    fetchDiaryEntries(student.grade, student.div);
+  }, [student]);
+
+  const fetchDiaryEntries = async (grade, div) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/api/daily-diary/${grade}/${div}`
+      );
+      setDiaryEntries(response.data);
+    } catch (error) {
+      console.error("Error fetching diary entries:", error);
+      // Handle error states or display an error message to the user
+    }
+  };
 
   return (
-    <Container className="mt-5 card p-4">
-      <h2 className="mb-4">Daily Updates</h2>
+    <Container className="card my-5 p-4">
+      <h3 className="mb-3">Daily Diary Viewer</h3>
       <hr className="red-line" />
-      <hr className="red-line mb-4" />
+      <hr className="red-line mb-3" />
 
-      {updates.map((update, index) => (
-        <Card key={index} className="mb-3">
-          <Card.Body>
-            <Row>
-              <Col xs={12} md={2} className="mb-2 mb-md-0">
-                <div className="text-center">
-                  <h4>{index + 1}</h4>
-                  <p>{update.date}</p>
-                </div>
-              </Col>
-              <Col xs={12} md={10}>
-                <h5>{update.title}</h5>
-                <p>{update.description}</p>
-                <p>{update.message}</p>
-                <div>
-                  <strong>Attachment(s):</strong>
-                  <ul>
-                    {update.attachments.map((attachment, idx) => (
-                      <li key={idx}>
-                        {attachment.name} {attachment.date}
-                        <a href={attachment.link} className="ml-2">
-                          Download
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </Col>
-            </Row>
-          </Card.Body>
-        </Card>
-      ))}
+      {student && (
+        <div className="mb-3">
+          <h5>
+            Viewing diary entries for Grade: {student.grade} | Division:{" "}
+            {student.div}
+          </h5>
+        </div>
+      )}
+
+      <hr className="page-line" />
+
+      <h4>Diary Entries</h4>
+
+      {diaryEntries.length === 0 ? (
+        <p>No diary entries found for the selected grade and division.</p>
+      ) : (
+        diaryEntries.map((entry) => (
+          <div key={entry._id} className="mb-4">
+            <h5>
+              Date: {new Date(entry.date).toLocaleDateString()} | Grade:{" "}
+              {entry.grade} | Division: {entry.division}
+            </h5>
+            <Table striped bordered hover responsive>
+              <thead>
+                <tr>
+                  <th>Period</th>
+                  <th>Subject</th>
+                  <th>Topic</th>
+                  <th>Sub Topic</th>
+                  <th>CW</th>
+                  <th>Reinforcement</th>
+                  <th>Submission Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {entry.periods.map((period) => (
+                  <tr key={period._id}>
+                    <td>{period.period}</td>
+                    <td>{period.subject}</td>
+                    <td>{period.topic}</td>
+                    <td>{period.subTopic}</td>
+                    <td>{period.cw}</td>
+                    <td>{period.reinforcement}</td>
+                    <td>{period.submissionDate}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+            <hr className="page-line" />
+          </div>
+        ))
+      )}
     </Container>
   );
 };
 
-export default DailyUpdates;
+export default DailyDiaryViewer;

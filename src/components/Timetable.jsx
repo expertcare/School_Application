@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 const Timetable = () => {
   const { student } = useAuth();
 
-  const [timetables, setTimetables] = useState(null); // Start with null instead of []
+  const [timetables, setTimetables] = useState(null);
 
   useEffect(() => {
     fetchTimetables();
