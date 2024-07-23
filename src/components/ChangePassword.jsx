@@ -1,13 +1,17 @@
 import React, { useState } from "react";
 import { Container, Form, Button, Row, Col } from "react-bootstrap";
+import { useAuth } from "../context/AuthContext";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 const ChangePassword = () => {
+  const { student } = useAuth();
+
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
-  const [formErrors, setFormErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -29,46 +33,60 @@ const ChangePassword = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     // Basic validation
     if (!currentPassword || !newPassword || !confirmPassword || !otp) {
-      setFormErrors({
-        message: "All fields are required.",
-      });
+      toast.warn("All fields are required.");
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setFormErrors({
-        message: "New password and confirm password do not match.",
-      });
+      toast.warn("New password and confirm password do not match.");
       return;
     }
 
     if (newPassword.length < 6 || newPassword.length > 12) {
-      setFormErrors({
-        message: "Password length should be between 6-12 characters.",
-      });
+      toast.warn("Password length should be between 6-12 characters.");
       return;
     }
 
-    // Here you can implement the logic for OTP validation
-    // For demo purposes, let's assume OTP validation is successful
+    try {
+      // Validate OTP before changing password
+      await axios.post("http://localhost:3000/api/auth/change-password", {
+        enrollmentNo: student.enrollmentNo,
+        currentPassword,
+        newPassword,
+        otp,
+      });
 
-    alert("Password changed successfully!");
-    // Reset the form
-    setCurrentPassword("");
-    setNewPassword("");
-    setConfirmPassword("");
-    setOtp("");
-    setFormErrors({});
+      // Password changed successfully
+      toast.success("Password changed successfully!");
+
+      // Reset form fields
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setOtp("");
+    } catch (error) {
+      console.error("Error changing password:", error);
+      toast.error(error.response.data.message || "Failed to change password.");
+    }
   };
+  const handleSendOTP = async () => {
+    try {
+      // Make API request to send OTP
+      await axios.post("http://localhost:3000/api/auth/generate-otp", {
+        enrollmentNo: student.enrollmentNo,
+      });
 
-  const handleSendOTP = () => {
-    // Simulate sending OTP (for demo purposes)
-    setOtpSent(true);
-    alert("OTP sent to your registered email.");
+      setOtpSent(true);
+      toast.success("OTP sent to your registered email.");
+    } catch (error) {
+      console.error("Error sending OTP:", error);
+      toast.warn(error.response.data.error);
+    }
   };
 
   return (
@@ -77,12 +95,9 @@ const ChangePassword = () => {
       <hr className="red-line" />
       <hr className="red-line" />
 
-      <p className="mt-3">Login: VH50-ENRNO6882</p>
+      <p className="mt-3">Login: {student.enrollmentNo}</p>
       <hr className="page-line" />
 
-      {formErrors.message && (
-        <div className="text-danger mb-3">{formErrors.message}</div>
-      )}
       <Form onSubmit={handleSubmit}>
         <Form.Group as={Row} controlId="currentPassword">
           <Form.Label column sm="4">
@@ -171,8 +186,7 @@ const ChangePassword = () => {
           <small className="text-danger">
             {" "}
             Click on Send OTP Button and Enter OTP received on your registered
-            Email account in OTP box. OTP will be valid for 1 time use in
-            current login session only!
+            Email account in OTP box. OTP will be valid for 5 minutes only!
           </small>
         </Form.Group>
 

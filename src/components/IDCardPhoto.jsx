@@ -1,21 +1,76 @@
 import React, { useState } from "react";
 import { Container, Row, Col, Image, Button, Form } from "react-bootstrap";
+import axios from "axios";
+import { useAuth } from "../context/AuthContext";
+import { toast } from "react-toastify";
 
 const IDCardPhoto = () => {
+  const { student } = useAuth(); // Assuming useAuth provides student details
+
   const [photo, setPhoto] = useState(null);
   const [photoUrl, setPhotoUrl] = useState("");
 
+  // Function to handle file selection
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
+      if (file.size > 500 * 1024) {
+        toast.warn("File size exceeds 500 KB limit.");
+        return;
+      }
       setPhoto(file);
       setPhotoUrl(URL.createObjectURL(file));
     }
   };
 
-  const handleRemovePhoto = () => {
-    setPhoto(null);
-    setPhotoUrl("");
+  // Function to upload photo
+  const handleUpload = async () => {
+    if (!photo) {
+      toast.warn("Please select a photo to upload.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("image", photo);
+    formData.append("enrollmentNo", student.enrollmentNo);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/idcard/upload",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      console.log(response.data); // Handle response data as needed
+
+      toast.success(response.data.message);
+      setPhoto(null);
+      // setPhotoUrl("");
+    } catch (error) {
+      console.error("Error uploading photo:", error);
+      toast.error(error.response.data.error);
+    }
+  };
+
+  // Function to remove uploaded photo from server
+  const handleDeletePhoto = async () => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:3000/api/idcard/remove/${student.enrollmentNo}`
+      );
+
+      console.log(response.data); // Handle response data as needed
+
+      toast.success(response.data.message);
+      setPhoto(null);
+      setPhotoUrl("");
+    } catch (error) {
+      toast.error(error.response.data.error);
+    }
   };
 
   return (
@@ -30,7 +85,7 @@ const IDCardPhoto = () => {
               <Image src={photoUrl} className="photo-preview" />
             ) : (
               <div
-                className="photo-placeholder mt-4 "
+                className="photo-placeholder mt-4"
                 style={{
                   width: "150px",
                   height: "150px",
@@ -53,10 +108,18 @@ const IDCardPhoto = () => {
             />
           </Form.Group>
           <Button
-            variant="danger"
+            variant="primary"
             className="mt-3"
-            onClick={handleRemovePhoto}
+            onClick={handleUpload}
             disabled={!photo}
+          >
+            Upload Photo
+          </Button>
+
+          <Button
+            variant="danger"
+            className="mt-3 ms-2"
+            onClick={handleDeletePhoto}
           >
             Remove Photo
           </Button>
