@@ -1,66 +1,66 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Table, Form, Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { useAuth } from "../context/AuthContext";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const ServiceRequestOutbox = () => {
-  const [serviceRequests, setServiceRequests] = useState([
-    {
-      id: "PSR000207027",
-      name: "Self drop/ pickup intimation",
-      status: "Closed",
-      date: "01-07-2024 10:38:19 AM",
-      closingDate: "02-07-2024 02:38 PM",
-    },
-    {
-      id: "PSR000182876",
-      name: "Request for change in drop and pick up point",
-      status: "Closed",
-      date: "05-06-2024 10:52:28 AM",
-      closingDate: "06-06-2024 02:52 PM",
-    },
-    // Add more service requests as needed
-  ]);
+  const { student } = useAuth();
 
-  // Sample student data
-  const students = [
-    {
-      name: "John Doe",
-      location: "Kolhapur",
-      applicationNo: "VH50-APPNO7073",
-      enrollmentNo: "VH50-ENRNO6882",
-      boardGradeDivision: "CBSE / Grade IV / A",
-    },
-    // Add more students as needed
-  ];
-
+  const [serviceRequests, setServiceRequests] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [category, setCategory] = useState("");
   const [requestText, setRequestText] = useState("");
 
-  // Function to toggle form visibility
+  useEffect(() => {
+    fetchServiceRequests();
+  }, []);
+
+  const fetchServiceRequests = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/api/service-requests/${student.enrollmentNo}`
+      );
+      setServiceRequests(response.data);
+    } catch (error) {
+      console.error("Error fetching service requests:", error);
+    }
+  };
+
   const toggleForm = () => {
     setShowForm(!showForm);
   };
 
-  // Function to handle category dropdown change
   const handleCategoryChange = (e) => {
     setCategory(e.target.value);
   };
 
-  // Function to handle service request text change
   const handleRequestTextChange = (e) => {
     setRequestText(e.target.value);
   };
 
-  // Function to handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Logic to handle form submission (e.g., submit to backend, update state, etc.)
-    // Reset form fields and hide form
-    setCategory("");
-    setRequestText("");
-    setShowForm(false);
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/service-requests",
+        {
+          enrollmentNo: student.enrollmentNo,
+          service: category,
+          details: requestText,
+        }
+      );
+      setServiceRequests([...serviceRequests, response.data]);
+      toast.success("Service request submitted successfully!");
+      setCategory("");
+      setRequestText("");
+      setShowForm(false);
+    } catch (error) {
+      console.error("Error creating service request:", error);
+      toast.error(error.response.data.error);
+    }
   };
 
   return (
@@ -88,15 +88,15 @@ const ServiceRequestOutbox = () => {
               </tr>
             </thead>
             <tbody>
-              {students.map((student, index) => (
-                <tr key={index}>
-                  <td>{student.name}</td>
-                  <td>{student.location}</td>
-                  <td>{student.applicationNo}</td>
-                  <td>{student.enrollmentNo}</td>
-                  <td>{student.boardGradeDivision}</td>
-                </tr>
-              ))}
+              <tr>
+                <td>{student.name}</td>
+                <td>{student.location}</td>
+                <td>{student.applicationNo}</td>
+                <td>{student.enrollmentNo}</td>
+                <td>
+                  {student.board} / {student.grade} / {student.div}
+                </td>
+              </tr>
             </tbody>
           </Table>
         </Col>
@@ -165,13 +165,13 @@ const ServiceRequestOutbox = () => {
             </thead>
             <tbody>
               {serviceRequests.map((request, index) => (
-                <tr key={request.id}>
+                <tr key={request._id}>
                   <td>{index + 1}</td>
-                  <td>{request.id}</td>
-                  <td>{request.name}</td>
+                  <td>{request._id}</td>
+                  <td>{request.service}</td>
                   <td>{request.status}</td>
-                  <td>{request.date}</td>
-                  <td>{request.closingDate}</td>
+                  <td>{new Date(request.date).toLocaleString()}</td>
+                  <td>{new Date(request.closingDate).toLocaleString()}</td>
                 </tr>
               ))}
             </tbody>

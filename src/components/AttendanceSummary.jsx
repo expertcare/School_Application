@@ -1,75 +1,59 @@
-import React from "react";
+import axios from "axios";
+import React, { useState, useEffect } from "react";
+import { Container, Table } from "react-bootstrap";
+import { useAuth } from "../context/AuthContext";
 
 const AttendanceSummary = () => {
-  const attendanceData = {
-    totalDays: 37,
-    totalWorkingDays: 25,
-    totalHolidays: 12,
-    totalPresentDays: 24,
-    totalAbsentDays: 1,
-    extraDaysAttended: 0,
-    absentDaysList: [
-      { date: "07 - 08 - 2024", day: "Monday" },
-      // Add more absent days as needed
-    ],
-  };
+  const { student } = useAuth(); // Assuming useAuth provides the authenticated student data
+
+  const [attendanceData, setAttendanceData] = useState([]);
+
+  useEffect(() => {
+    const fetchAttendanceData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3000/api/attendance/${student.enrollmentNo}`
+        );
+        setAttendanceData(response.data);
+      } catch (error) {
+        console.error("Error fetching attendance data:", error);
+      }
+    };
+
+    fetchAttendanceData();
+  }, [student.enrollmentNo]);
 
   return (
-    <div className="container min-vh-100">
-      <div className="card mt-5 p-4">
-        <div>
-          <h3 className="my-4">Attendance Summary</h3>
-          <div>
-            <hr className="red-line" />
-            <hr className="red-line" />
-          </div>
-          <h4 className="my-3">Summary</h4>
-          <hr className="page-line" />
-          <div className="row mt-4">
-            <div className="col-md-12">
-              <p>Total Days: {attendanceData.totalDays}</p>
-              <hr className="page-line" />
+    <Container className="card my-5 p-4 min-vh-100">
+      <h2 className="text-center mb-4">
+        Attendance Summary for Enrollment No: {student.enrollmentNo}
+      </h2>
+      <hr className="red-line" />
+      <hr className="red-line mb-4" />
+      <Table striped bordered hover responsive>
+        <thead>
+          <tr>
+            <th>Date/Time</th>
 
-              <p>Total Working days: {attendanceData.totalWorkingDays}</p>
-              <hr className="page-line" />
-
-              <p>Total Holidays: {attendanceData.totalHolidays}</p>
-              <hr className="page-line" />
-
-              <p>Total Present days: {attendanceData.totalPresentDays}</p>
-              <hr className="page-line" />
-
-              <p>Total Absent days: {attendanceData.totalAbsentDays}</p>
-              <hr className="page-line" />
-
-              <p>Extra Days Attended: {attendanceData.extraDaysAttended}</p>
-              <hr className="page-line" />
-            </div>
-          </div>
-
-          <h4 className="mt-4">My Absent Days List</h4>
-          <hr className="page-line" />
-          <table className="table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Date</th>
-                <th>Day</th>
-              </tr>
-            </thead>
-            <tbody>
-              {attendanceData.absentDaysList.map((absentDay, index) => (
-                <tr key={index}>
-                  <td>{index + 1}</td>
-                  <td>{absentDay.date}</td>
-                  <td>{absentDay.day}</td>
-                </tr>
+            {attendanceData.length > 0 &&
+              attendanceData[0].records.map((record) => (
+                <th key={record._id}>{record.timeSlot}</th>
               ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+          </tr>
+        </thead>
+        <tbody>
+          {attendanceData.map((attendanceRecord) => (
+            <tr key={attendanceRecord._id}>
+              <td>{new Date(attendanceRecord.date).toLocaleDateString()}</td>
+
+              {attendanceRecord.records.map((record) => (
+                <td key={record._id}>{record.attendance}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    </Container>
   );
 };
 
