@@ -1,10 +1,42 @@
-import React, { useState } from "react";
-import { Table } from "react-bootstrap";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { Form, Table, Button } from "react-bootstrap";
 
 const ActivityFeesComponent = () => {
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
   const [isChecked, setIsChecked] = useState(false);
+  const [activities, setActivities] = useState([]);
+  const [selectedActivities, setSelectedActivities] = useState([]);
+
+  useEffect(() => {
+    fetchActivities();
+  }, []);
+
+  const fetchActivities = async () => {
+    try {
+      const response = await axios.get("http://localhost:3000/api/activities");
+      setActivities(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleSelectChange = (event) => {
+    const index = event.target.value;
+    const selectedActivity = activities[index];
+    // Check if the activity is already selected
+    if (!selectedActivities.includes(selectedActivity)) {
+      setSelectedActivities([...selectedActivities, selectedActivity]);
+    }
+  };
+
+  const handleRemoveActivity = (activity) => {
+    const updatedActivities = selectedActivities.filter(
+      (act) => act !== activity
+    );
+    setSelectedActivities(updatedActivities);
+  };
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -29,6 +61,14 @@ const ActivityFeesComponent = () => {
     }
   };
 
+  // Function to calculate total amount of selected activities
+  const calculateTotalAmount = () => {
+    return selectedActivities.reduce(
+      (total, activity) => total + parseFloat(activity.amount),
+      0
+    );
+  };
+
   return (
     <div className="container my-5 card p-4">
       <div className="activity-fees-component">
@@ -36,53 +76,68 @@ const ActivityFeesComponent = () => {
         <hr className="red-line" />
         <hr className="red-line mb-4" />
 
-        <div className="activity-select">
-          <label htmlFor="activity-select">
-            Select Activity For Fees Payment:
-          </label>
-          <select className="form-select mb-3" id="activity-select">
-            <option>-Select-</option>
-            <option>
-              Exam _Optional_24-25_MaRRS International Spelling Bee_Scientia
-              Exertus
-            </option>
-            <option>
-              Exam_Optional_National Olympiad Foundation_Cyber Preparatory
-              E-Book_24-25
-            </option>
-            {/* Add more options as needed */}
-          </select>
-        </div>
+        <Form>
+          <div className="activity-select">
+            <Form.Label htmlFor="activity-select">
+              Select Activities For Fees Payment:
+            </Form.Label>
+            <Form.Select
+              className="form-select mb-3"
+              id="activity-select"
+              onChange={handleSelectChange}
+            >
+              <option>-Select-</option>
+              {activities.map((activity, index) => (
+                <option key={activity._id} value={index}>
+                  {activity.activityName}
+                </option>
+              ))}
+            </Form.Select>
+          </div>
+        </Form>
 
         <hr className="page-line" />
 
         <div className="fees-summary">
           <h5>FEES SUMMARY</h5>
-          <p>
-            PLEASE CLICK ON PAY NOW TO EXPLORE PAYMENT OPTIONS & INSTALLMENTS/
-            BREAKUPS
-          </p>
+          {selectedActivities.length > 0 ? (
+            <>
+              <Table striped bordered hover>
+                <thead>
+                  <tr>
+                    <th>SR. NO.</th>
+                    <th>PARTICULARS</th>
+                    <th>AMOUNT</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {selectedActivities.map((activity, index) => (
+                    <tr key={activity._id}>
+                      <td>{index + 1}</td>
+                      <td>{activity.description}</td>
+                      <td>{activity.amount}</td>
+                      <td>
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          onClick={() => handleRemoveActivity(activity)}
+                        >
+                          Remove
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+              <h4 className="my-3 me-3 float-end">
+                Total Amount: {calculateTotalAmount().toFixed(2)}
+              </h4>
+            </>
+          ) : (
+            <p>No activities selected</p>
+          )}
         </div>
-
-        <hr className="page-line" />
-
-        <Table striped bordered hover>
-          <thead>
-            <tr>
-              <th>SR. NO.</th>
-              <th>PARTICULARS</th>
-              <th>AMOUNT</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            <tr>
-              <td>1</td>
-              <td></td>
-              <td></td>
-            </tr>
-          </tbody>
-        </Table>
 
         <hr className="page-line" />
 
@@ -156,7 +211,7 @@ const ActivityFeesComponent = () => {
         <button
           className="btn btn-primary mt-3"
           onClick={handleSubmit}
-          disabled={!isChecked}
+          disabled={!isChecked || selectedActivities.length === 0}
         >
           Pay Now
         </button>
