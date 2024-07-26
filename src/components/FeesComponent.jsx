@@ -1,9 +1,65 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useAuth } from "../context/AuthContext";
 
 const FeesComponent = () => {
+  const { student } = useAuth();
+
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
   const [isChecked, setIsChecked] = useState(false);
+
+  const [feeDetails, setFeeDetails] = useState(null);
+  const [loading, setLoading] = useState(true); // Loading state for async operations
+
+  // Function to get the current academic year
+  const getCurrentAcademicYear = () => {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const month = now.getMonth() + 1; // JavaScript months are 0-based (0 = January, 11 = December)
+
+    let startYear;
+    let endYear;
+
+    if (month >= 6) {
+      startYear = currentYear;
+      endYear = currentYear + 1;
+    } else {
+      startYear = currentYear - 1;
+      endYear = currentYear;
+    }
+
+    return `${startYear}-${endYear}`;
+  };
+
+  const academicYear = getCurrentAcademicYear();
+
+  const grade = student.grade;
+
+  useEffect(() => {
+    const fetchFeeDetails = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/api/fees/details",
+          {
+            params: { academicYear, grade },
+          }
+        );
+        if (response.data.success) {
+          setFeeDetails(response.data.data);
+        } else {
+          toast.error(response.data.message);
+        }
+      } catch (error) {
+        toast.error("Failed to fetch fee details. Please try again.");
+      } finally {
+        setLoading(false); // Stop loading
+      }
+    };
+
+    fetchFeeDetails();
+  }, [academicYear, grade]);
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -17,14 +73,24 @@ const FeesComponent = () => {
     setIsChecked(!isChecked);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!isChecked) {
+      toast.warn("Please agree to the Terms & Conditions.");
+      return;
+    }
     // Handle payment logic here
-    if (isChecked) {
-      alert("Payment processed successfully!");
-      // Perform payment-related actions (e.g., API calls, redirection)
-    } else {
-      alert("Please agree to the Terms & Conditions.");
+    try {
+      // Example payment API call (adjust URL and payload as needed)
+      await axios.post("http://localhost:3000/api/payment", {
+        email,
+        mobile,
+        amount: feeDetails?.totalFee,
+      });
+      toast.success("Payment processed successfully!");
+      // Perform payment-related actions (e.g., redirection)
+    } catch (error) {
+      toast.error("Payment failed. Please try again.");
     }
   };
 
@@ -45,19 +111,26 @@ const FeesComponent = () => {
           <hr className="page-line" />
         </div>
 
-        <div className="total-fees d-flex justify-content-between">
-          <h5>TOTAL FEES FOR ACADEMIC YEAR 24-25</h5>
-          <h5>₹1,56,600</h5>
-        </div>
+        {loading ? (
+          <p>Loading fee details...</p>
+        ) : (
+          <>
+            <div className="total-fees d-flex justify-content-between">
+              <h5>TOTAL FEES FOR ACADEMIC YEAR {academicYear}</h5>
+              <h5>₹{feeDetails?.totalFee}</h5>
+            </div>
 
-        <hr className="page-line" />
+            <hr className="page-line" />
 
-        <div className="balance-fees d-flex justify-content-between">
-          <h5>BALANCE FEES</h5>
-          <h5>₹63,350</h5>
-        </div>
+            <div className="balance-fees d-flex justify-content-between">
+              <h5>BALANCE FEES</h5>
+              {/* <h5>₹{feeDetails?.balanceFee.toLocaleString()}</h5> */}
+              <h5>₹5000</h5>
+            </div>
 
-        <hr className="page-line" />
+            <hr className="page-line" />
+          </>
+        )}
 
         <div className="contact-info">
           <h5>CONTACT INFORMATION</h5>
@@ -113,7 +186,7 @@ const FeesComponent = () => {
               <a href="#">Click Here</a>
             </li>
             <li>
-              ONLINE COLLECTION OF FEE IS SUBJECTED TO POLICIES AND CIRCULARS.
+              ONLINE COLLECTION OF FEE IS SUBJECT TO POLICIES AND CIRCULARS.
             </li>
             <li>
               PLEASE CONTACT OUR DEDICATED SPECIAL SERVICE DESK AT{" "}
